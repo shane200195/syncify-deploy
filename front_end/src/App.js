@@ -47,18 +47,33 @@ class App extends React.Component{
             //logged: params.access_token ? true : false,
             name: 'Not checked',
             image: '',
-            timestamp: 0
+            timestamp: 0,
+            MS: "00:00",
+            URI: ""
         }
 
         //binding the functions to this statement
         this.getNowPlaying = this.getNowPlaying.bind(this);
         this.play = this.play.bind(this);
         this.pause = this.pause.bind(this);
-        this.getCurrentTime = this.getCurrentTime.bind(this);
+        this.sync = this.sync.bind(this);
 
+        socket.on('sync', (command) => {
+            var URI = ""
+            syncify.getTrack(command.ID).then((response) => {
+                syncify.play({
+                    //"context_uri": URI,
+                    "uris": [response.uri],
+                })
+                syncify.seek(command.timestamp, {})
+                this.getNowPlaying()
+            })
+        })
         //getting the song being played
         this.getNowPlaying();
     }
+
+
 
     //A function to get information about the song currently being played
     getNowPlaying() {
@@ -67,17 +82,9 @@ class App extends React.Component{
                 this.setState({
                         name: response.item.name,
                         image: response.item.album.images[0].url,
-                        time: response.progress_ms
-                })
-            })
-    }
-
-    //A function to retreive current time of the playback
-    getCurrentTime() {
-        syncify.getMyCurrentPlaybackState()
-            .then((response) => {
-                this.setState({
-                    time: response.progress_ms
+                        timestamp: response.progress_ms,
+                        MS: this.MstoMin(response.progress_ms),
+                        ID: response.item.id
                 })
             })
     }
@@ -113,7 +120,19 @@ class App extends React.Component{
         //sending a signal to socket.io to pause the playback
         socket.emit('pause', 'pause');
         syncify.pause({});
-        this.getCurrentTime();
+    }
+
+    sync(){
+        this.getNowPlaying();
+        socket.emit('sync', this.state)
+    }
+
+    componentDidMount(){
+        this.interval = setInterval(() => this.getNowPlaying(), 1000);
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.interval)
     }
 
     //rendering the page
@@ -126,14 +145,20 @@ class App extends React.Component{
             <div>
                 <img src={this.state.image} />
             </div>
+            <button onClick={this.sync}>Sync with me</button>
             <button onClick={this.pause}>Pause</button>
             <button onClick={this.play}>Play</button>
-            <h1>{this.MstoMin(this.state.time)}</h1>
+            <h1>{this.state.MS}</h1>
             <p>Timestamp: {this.state.timestamp}</p>
         </div>
     }
 }
 
+class SearchSongs extends React.Component{
+    constructor(props){
+        
+    }
+}
+
 ReactDOM.render(<App />, document.getElementById('root'));
 export default App;
-

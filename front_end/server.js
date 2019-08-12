@@ -23,7 +23,13 @@ io.on('connection', (client) => {
         //sending to all other users that the command is now pause
         client.broadcast.emit('command', 'pause')
     })
+
     client.on('play', (command) => {
         client.broadcast.emit('command', 'play');
+    })
+
+    client.on('sync', (state) => {
+        client.broadcast.emit('sync', state)
+        console.log(state);
     })
 });
