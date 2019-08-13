@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 import Spotify from 'spotify-web-api-js'
 import openSocket from 'socket.io-client';
 
+//Made by 5HAN3 D1NG
 const PORT = process.env.PORT || 3231;
 //opening a web socket connection
 const socket = openSocket(window.location.hostname);

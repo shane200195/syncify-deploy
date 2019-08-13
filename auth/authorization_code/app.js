@@ -12,7 +12,7 @@ var request = require('request'); // "Request" library
 var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
-
+////Made by 5HAN3 D1NG
 var client_id = 'b8967ac40340474289a93db76c63dcc4'; // Your client id
 var client_secret = '9eaf2f85939b4c589c8e939b79f4c2f7'; // Your secret
 var redirect_uri = 'https://syncify-auth.herokuapp.com/callback'; // Your redirect uri
